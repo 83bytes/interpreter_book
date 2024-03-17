@@ -5,23 +5,23 @@ import (
 )
 
 type Lexer struct {
-	input        string
-	position     int  // current position in input (points to current char)
-	readPosition int  // current reading position in input (after current char)
-	ch           byte // current char under examination
+	input        string // the original input string
+	position     int    // current position in input (points to current char)
+	readPosition int    // current reading position in input (after current char)
+	ch           byte   // current char under examination i.e. input[position]
 }
 
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
-	l.readChar()
+	l.readChar() // init the Lexer by reading the first char
 	return l
 }
 
-// pretty cool.
-// we are never returning the char.
-// we are justtttt updating the pointer to which its pointing to.
-// we are updating the struct
+// Reads the next character in the input and puts in the ch variable
 func (l *Lexer) readChar() {
+	// we are never returning the char.
+	// we are just updating the pointer to which its pointing to.
+
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
 	} else {
@@ -41,6 +41,8 @@ func (l *Lexer) peekChar() byte {
 	}
 }
 
+// Returns the appropriate token for the entire input
+// Switches on the current input character and processes the next characters accordingly
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
@@ -112,36 +114,45 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
 
+// read an identifier (which is a word/string of characters)
 func (l *Lexer) readIdentifier() string {
+	// readIdentifier and readNumber follows the same pattern
 	position := l.position
 
 	for isLetter(l.ch) {
-		// this works because readchar keeps updating the l.position everytime it is called
 		l.readChar()
 	}
 
 	return l.input[position:l.position]
 }
 
+// read a multi-digit number (i.e.234)
+// If the current character is a digit, then read the next character
+func (l *Lexer) readNumber() string {
+	position := l.position
+	// as long as as the current character is a digit keep reading the next character
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+	// if the current character is not a digit
+	// then the number is from position to (l.position - 1)
+	// recall: how slice-indexig works
+	return l.input[position:l.position]
+}
+
+// checks if the character being examined    is a digit or not
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
+}
+
+// Is the current character under inspection is a Letter ?
 func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }
 
+// If the current character is whitespace, it reads the next one
 func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
-}
-
-func (l *Lexer) readNumber() string {
-	position := l.position
-	for isDigit(l.ch) {
-		l.readChar()
-	}
-
-	return l.input[position:l.position]
-}
-
-func isDigit(ch byte) bool {
-	return '0' <= ch && ch <= '9'
 }

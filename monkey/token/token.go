@@ -56,6 +56,9 @@ var Keywords = map[string]TokenType{
 	"return": RETURN,
 }
 
+// Look up identifiers for the language
+// If the identifier is a keyword, return the keyword else
+// return IDENT indicating that this token is an identifier
 func LookupIdent(ident string) TokenType {
 	if tok, ok := Keywords[ident]; ok {
 		return tok
