@@ -8,7 +8,7 @@ import (
 	"monkey/token"
 )
 
-const PROMPT = ">> "
+const PROMPT = "MONKEY >> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -24,6 +24,7 @@ func Start(in io.Reader, out io.Writer) {
 
 		l := lexer.New(line)
 
+		// keep processing every character in the line above untill EOF is reached
 		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 			fmt.Printf("%+v\n", tok)
 		}

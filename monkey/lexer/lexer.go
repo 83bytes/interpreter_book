@@ -11,6 +11,7 @@ type Lexer struct {
 	ch           byte   // current char under examination i.e. input[position]
 }
 
+// Creates a new lexer and initializes it by reading the first character
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar() // init the Lexer by reading the first char
@@ -50,6 +51,7 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
+		// check if the current token is a = OR ==
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
@@ -62,6 +64,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
 	case '!':
+		// check if the token is ! OR !=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
@@ -94,14 +97,17 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = token.EOF
 	default:
 		if isLetter(l.ch) {
+			// is the string an indentifier or a string literal
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
+			// is this a numeric literal
 			tok.Type = token.INT
 			tok.Literal = l.readNumber()
 			return tok
 		} else {
+			// it is illegal if it is anything else
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
 	}
