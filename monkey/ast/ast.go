@@ -46,7 +46,6 @@ func (p *Program) TokenLiteral() string {
 // the identifier
 // the expression on the right hand side of the operator
 // the token (let) in this case
-
 type LetStatement struct {
 	Token token.Token // the token.LET token
 	Name  *Identifier // pointer to an Identifier Node
